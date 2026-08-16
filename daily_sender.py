@@ -31,7 +31,7 @@ async def get_sleep_time(Abend):
     return wait_time
 
 async def schedule_daily_task():
-    await log("Updating File on Startup: " + str(datetime.date.today())+ " | "+ str(time.strftime("%A")))
+    await log("Updating File on Startup: " + str(datetime.date.today())+ " | "+ str(time.strftime("%A")) + " at " + str(time.strftime("%H:%M:%S")))
     result = await _daily_update()
     result.append([None,'','','','','','','']) #False = Abend
     await send_update(result, send_to_discord = False)
