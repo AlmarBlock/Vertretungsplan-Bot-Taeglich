@@ -5,13 +5,15 @@ import aiohttp
 from discord import Webhook
 import time
 
-async def log(message):
-    with open('./logs/daily_sender.log', 'a') as file:
-        file.write(message + '\n')
-        file.close()
+async def log(message, mode="info"):
+    if not mode == "debug":
+        with open('./logs/daily_sender.log', 'a') as file:
+            file.write(message + '\n')
+            file.close()
     print(message)
 
 async def send_update(result, send_to_discord = True):
+    log(result, "debug")
     with open('/mount/results.txt', 'w', encoding='utf-8') as file:
         file.write(str(result))
     if send_to_discord:
