@@ -21,7 +21,7 @@ async def log(message, mode="info"):
     print(message)
 
 async def send_update(result, send_to_discord = True):
-    log(result, "debug")
+    await log(result, "debug")
     with open('/mount/results.txt', 'w', encoding='utf-8') as file:
         file.write(str(result))
     if send_to_discord:
