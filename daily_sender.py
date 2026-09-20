@@ -6,7 +6,11 @@ import aiohttp
 from discord import Webhook
 import json
 
-config = json.load(open('./config.json'))
+try:
+    config = json.load(open('./config.json'))
+except FileNotFoundError:
+    print("config.json not found. Please create the file with the necessary configuration.")
+    exit(1)
 
 TIMEZONE = 'Europe/Berlin'
 BERLIN_TZ = ZoneInfo(TIMEZONE)
