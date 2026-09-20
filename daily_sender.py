@@ -4,6 +4,9 @@ from zoneinfo import ZoneInfo
 from get_current_info import _daily_update
 import aiohttp
 from discord import Webhook
+import json
+
+config = json.load(open('./config.json'))
 
 TIMEZONE = 'Europe/Berlin'
 BERLIN_TZ = ZoneInfo(TIMEZONE)
@@ -26,8 +29,8 @@ async def send_update(result, send_to_discord = True):
         file.write(str(result))
     if send_to_discord:
         async with aiohttp.ClientSession() as session:
-            webhook = Webhook.from_url('https://discord.com/api/webhooks/1287802925971673169/mz6yehCyxWob4FXkVmoKUjY9PiSSxaDPegcCVo3m7bp4BbXaxKjjHRv8KBC-ACzAd6Mp', session=session)
-            await webhook.send("update", username="user_name", avatar_url="https://www.goethe.flensburg.de/files/logo/logo196.png")
+            webhook = Webhook.from_url(config['WEBHOOK_URL'], session=session)
+            await webhook.send("update", username="user_name", avatar_url=config['LOGO_URL'])
 
 async def get_sleep_time(Abend):
     now = berlin_now()
@@ -43,7 +46,7 @@ async def get_sleep_time(Abend):
 async def schedule_daily_task():
     now = berlin_now()
     await log("Updating File on Startup: " + str(now.date()) + " | " + now.strftime("%A") + " at " + now.strftime("%H:%M:%S"))
-    result = await _daily_update()
+    result = await _daily_update(vertretungsplan_URL=config['VERTRETUNGSPLAN_URL'])
     result.append([None,'','','','','','','']) #False = Abend
     await send_update(result, send_to_discord = False)
     await log("Done! ✅")

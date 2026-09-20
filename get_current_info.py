@@ -2,8 +2,9 @@ import requests
 from bs4 import BeautifulSoup
 import time
 
-async def _daily_update():
-    source_url = 'https://goethe-flensburg.de/wp-content/uploads/vertretung/S_Dateien/f1/subst_001.htm'
+async def _daily_update(vertretungsplan_URL=None):
+    if vertretungsplan_URL:
+        source_url = vertretungsplan_URL
     while True:
         try:
             response = requests.get(source_url)
