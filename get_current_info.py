@@ -2,9 +2,19 @@ import requests
 from bs4 import BeautifulSoup
 import time
 
+async def log(message, mode="info"):
+    if not mode == "debug":
+        with open('./logs/daily_sender.log', 'a') as file:
+            file.write(message + '\n')
+            file.close()
+    print(message)
+
 async def _daily_update(vertretungsplan_URL=None):
     if vertretungsplan_URL:
         source_url = vertretungsplan_URL
+    else:
+        await log("No URL provided for the Vertretungsplan. Please provide a valid URL.")
+        return None
     while True:
         try:
             response = requests.get(source_url)
