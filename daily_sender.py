@@ -29,7 +29,7 @@ async def log(message, mode="info"):
 
 async def send_update(result, send_to_discord = True):
     await log(result, "debug")
-    with open('/mount/results.txt', 'w', encoding='utf-8') as file:
+    with open('./mount/results.txt', 'w', encoding='utf-8') as file:
         file.write(str(result))
     if send_to_discord:
         async with aiohttp.ClientSession() as session:
@@ -57,10 +57,11 @@ async def schedule_daily_task():
     await send_update(result, send_to_discord = False)
     await log("Done! ✅")
     current_time = now.time()
+    currentPlace = None
     if datetime.time(7, 45) <= current_time < datetime.time(18, 30):
         await log("start on Abend")
         currentPlace = 0
-    elif datetime.time(18, 30) <= current_time < datetime.time(6, 30):
+    elif current_time >= datetime.time(18, 30) or current_time < datetime.time(6, 30):
         await log("start on Morgens-1")
         currentPlace = 1
     elif datetime.time(6, 30) <= current_time < datetime.time(7, 45):

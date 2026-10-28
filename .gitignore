@@ -3,3 +3,4 @@ logs/
 .local
 __pycache__
 config.json
+mount/
