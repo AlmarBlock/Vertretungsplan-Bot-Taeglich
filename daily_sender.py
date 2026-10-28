@@ -36,12 +36,14 @@ async def send_update(result, send_to_discord = True):
             webhook = Webhook.from_url(config['WEBHOOK_URL'], session=session)
             await webhook.send("update", username="user_name", avatar_url=config['LOGO_URL'])
 
-async def get_sleep_time(Abend):
+async def get_sleep_time(TimeOfDay):
     now = berlin_now()
-    if Abend:
+    if TimeOfDay == 0:
         target_time = now.replace(hour=18, minute=30, second=00, microsecond=0)
-    else:
+    elif TimeOfDay == 1:
         target_time = now.replace(hour=6, minute=30, second=0, microsecond=0)
+    elif TimeOfDay == 2:
+        target_time = now.replace(hour=7, minute=45, second=0, microsecond=0)
     if now > target_time:
         target_time += datetime.timedelta(days=1)
     wait_time = (target_time - now).total_seconds()
@@ -55,29 +57,41 @@ async def schedule_daily_task():
     await send_update(result, send_to_discord = False)
     await log("Done! ✅")
     current_time = now.time()
-    if datetime.time(6, 30) <= current_time < datetime.time(18, 30):
+    if datetime.time(7, 45) <= current_time < datetime.time(18, 30):
         await log("start on Abend")
         currentPlace = 0
-    else:
-        await log("start on Morgen")
+    elif datetime.time(18, 30) <= current_time < datetime.time(6, 30):
+        await log("start on Morgens-1")
         currentPlace = 1
+    elif datetime.time(6, 30) <= current_time < datetime.time(7, 45):
+        await log("start on Morgen-2")
+        currentPlace = 2
     while True:
         if currentPlace == 0:
-            await asyncio.sleep(await get_sleep_time(True))
+            await asyncio.sleep(await get_sleep_time(0))
             now = berlin_now()
             if now.strftime("%A") in ["Monday", "Tuesday", "Wednesday", "Thursday", "Sunday"]:
                 await log("Abends: " + str(now.date()) + " | " + now.strftime("%A"))
                 result = await _daily_update()
-                result.append([False,'','','','','','','']) #False = Abend
+                result.append([0,'','','','','','','']) #False = Abend
                 await send_update(result)
             currentPlace = 1
         if currentPlace == 1:
-            await asyncio.sleep(await get_sleep_time(False))
+            await asyncio.sleep(await get_sleep_time(1))
             now = berlin_now()
             if now.strftime("%A") in ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]:
-                await log("Morgens: " + str(now.date()) + " | " + now.strftime("%A"))
+                await log("Morgens-1: " + str(now.date()) + " | " + now.strftime("%A"))
                 result = await _daily_update()
-                result.append([True,'','','','','','','']) #True = Morgen
+                result.append([1,'','','','','','','']) #True = Morgen
+                await send_update(result)
+            currentPlace = 2
+        if currentPlace == 2:
+            await asyncio.sleep(await get_sleep_time(2))
+            now = berlin_now()
+            if now.strftime("%A") in ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]:
+                await log("Morgens-2: " + str(now.date()) + " | " + now.strftime("%A"))
+                result = await _daily_update()
+                result.append([2,'','','','','','','']) #True = Morgen
                 await send_update(result)
             currentPlace = 0
 
