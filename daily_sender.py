@@ -72,7 +72,7 @@ async def schedule_daily_task():
             now = berlin_now()
             if now.strftime("%A") in ["Monday", "Tuesday", "Wednesday", "Thursday", "Sunday"]:
                 await log("Abends: " + str(now.date()) + " | " + now.strftime("%A"))
-                result = await _daily_update()
+                result = await _daily_update(vertretungsplan_URL=config['VERTRETUNGSPLAN_URL'])
                 result.append([0,'','','','','','','']) #False = Abend
                 await send_update(result)
             currentPlace = 1
@@ -81,7 +81,7 @@ async def schedule_daily_task():
             now = berlin_now()
             if now.strftime("%A") in ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]:
                 await log("Morgens-1: " + str(now.date()) + " | " + now.strftime("%A"))
-                result = await _daily_update()
+                result = await _daily_update(vertretungsplan_URL=config['VERTRETUNGSPLAN_URL'])
                 result.append([1,'','','','','','','']) #True = Morgen
                 await send_update(result)
             currentPlace = 2
@@ -90,7 +90,7 @@ async def schedule_daily_task():
             now = berlin_now()
             if now.strftime("%A") in ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]:
                 await log("Morgens-2: " + str(now.date()) + " | " + now.strftime("%A"))
-                result = await _daily_update()
+                result = await _daily_update(vertretungsplan_URL=config['VERTRETUNGSPLAN_URL'])
                 result.append([2,'','','','','','','']) #True = Morgen
                 await send_update(result)
             currentPlace = 0
