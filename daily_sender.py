@@ -42,8 +42,6 @@ async def get_sleep_time(TimeOfDay):
         target_time = now.replace(hour=18, minute=30, second=00, microsecond=0)
     elif TimeOfDay == 1:
         target_time = now.replace(hour=6, minute=30, second=0, microsecond=0)
-    elif TimeOfDay == 2:
-        target_time = now.replace(hour=7, minute=5, second=0, microsecond=0)
     if now > target_time:
         target_time += datetime.timedelta(days=1)
     wait_time = (target_time - now).total_seconds()
@@ -58,15 +56,12 @@ async def schedule_daily_task():
     await log("Done! ✅")
     current_time = now.time()
     currentPlace = None
-    if datetime.time(7, 5) <= current_time < datetime.time(18, 30):
+    if datetime.time(6, 30) <= current_time < datetime.time(18, 30):
         await log("start on Abend")
         currentPlace = 0
     elif current_time >= datetime.time(18, 30) or current_time < datetime.time(6, 30):
         await log("start on Morgens-1")
         currentPlace = 1
-    elif datetime.time(6, 30) <= current_time < datetime.time(7, 5):
-        await log("start on Morgen-2")
-        currentPlace = 2
     while True:
         if currentPlace == 0:
             await asyncio.sleep(await get_sleep_time(0))
@@ -85,16 +80,15 @@ async def schedule_daily_task():
                 result = await _daily_update(vertretungsplan_URL=config['VERTRETUNGSPLAN_URL'])
                 result.append([1,'','','','','','','']) #True = Morgen
                 await send_update(result)
-            currentPlace = 2
-        if currentPlace == 2:
-            await asyncio.sleep(await get_sleep_time(2))
-            now = berlin_now()
-            if now.strftime("%A") in ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]:
-                await log("Morgens-2: " + str(now.date()) + " | " + now.strftime("%A"))
-                result = await _daily_update(vertretungsplan_URL=config['VERTRETUNGSPLAN_URL'])
-                result.append([2,'','','','','','','']) #True = Morgen
-                await send_update(result)
             currentPlace = 0
+            while current_time < datetime.time(7, 45):
+                await asyncio.sleep(120) #2 min.
+                now = berlin_now()
+                if now.strftime("%A") in ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]:
+                    await log("Morgens-2: " + str(now.date()) + " | " + now.strftime("%A"))
+                    result = await _daily_update(vertretungsplan_URL=config['VERTRETUNGSPLAN_URL'])
+                    result.append([2,'','','','','','','']) #2 = Morgen with update
+                    await send_update(result)
 
 
 if __name__ == "__main__":
