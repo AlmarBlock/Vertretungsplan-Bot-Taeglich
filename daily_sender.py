@@ -43,7 +43,7 @@ async def get_sleep_time(TimeOfDay):
     elif TimeOfDay == 1:
         target_time = now.replace(hour=6, minute=30, second=0, microsecond=0)
     elif TimeOfDay == 2:
-        target_time = now.replace(hour=7, minute=45, second=0, microsecond=0)
+        target_time = now.replace(hour=7, minute=5, second=0, microsecond=0)
     if now > target_time:
         target_time += datetime.timedelta(days=1)
     wait_time = (target_time - now).total_seconds()
@@ -53,18 +53,18 @@ async def schedule_daily_task():
     now = berlin_now()
     await log("Updating File on Startup: " + str(now.date()) + " | " + now.strftime("%A") + " at " + now.strftime("%H:%M:%S"))
     result = await _daily_update(vertretungsplan_URL=config['VERTRETUNGSPLAN_URL'])
-    result.append([None,'','','','','','','']) #False = Abend
+    result.append([None,'','','','','','','']) #1 = Abend
     await send_update(result, send_to_discord = False)
     await log("Done! ✅")
     current_time = now.time()
     currentPlace = None
-    if datetime.time(7, 45) <= current_time < datetime.time(18, 30):
+    if datetime.time(7, 5) <= current_time < datetime.time(18, 30):
         await log("start on Abend")
         currentPlace = 0
     elif current_time >= datetime.time(18, 30) or current_time < datetime.time(6, 30):
         await log("start on Morgens-1")
         currentPlace = 1
-    elif datetime.time(6, 30) <= current_time < datetime.time(7, 45):
+    elif datetime.time(6, 30) <= current_time < datetime.time(7, 5):
         await log("start on Morgen-2")
         currentPlace = 2
     while True:
