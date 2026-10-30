@@ -24,7 +24,7 @@ async def _daily_update(vertretungsplan_URL=None):
                 print(f"Received status code {response.status_code}, retrying...")
         except requests.exceptions.RequestException as e:
             print(f"Error fetching the URL: {e}, retrying...")
-        time.sleep(2)
+            time.sleep(2)
     source_html = response.text
 
     # BeautifulSoup verwenden, um das HTML zu parsen
