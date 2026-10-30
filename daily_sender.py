@@ -54,12 +54,12 @@ async def schedule_daily_task():
     result.append([None,'','','','','','','']) #1 = Abend
     await send_update(result, send_to_discord = False)
     await log("Done! ✅")
-    current_time = now.time()
+    current_time = berlin_now()
     currentPlace = None
-    if datetime.time(6, 30) <= current_time < datetime.time(18, 30):
+    if current_time.replace(hour=6, minute=30, second=0, microsecond=0) <= current_time < current_time.replace(hour=18, minute=30, second=0, microsecond=0):
         await log("start on Abend")
         currentPlace = 0
-    elif current_time >= datetime.time(18, 30) or current_time < datetime.time(6, 30):
+    elif current_time >= current_time.replace(hour=18, minute=30, second=0, microsecond=0) or current_time < current_time.replace(hour=6, minute=30, second=0, microsecond=0):
         await log("start on Morgens-1")
         currentPlace = 1
     while True:
@@ -69,7 +69,7 @@ async def schedule_daily_task():
             if now.strftime("%A") in ["Monday", "Tuesday", "Wednesday", "Thursday", "Sunday"]:
                 await log("Abends: " + str(now.date()) + " | " + now.strftime("%A"))
                 result = await _daily_update(vertretungsplan_URL=config['VERTRETUNGSPLAN_URL'])
-                result.append([0,'','','','','','','']) #False = Abend
+                result.append([0,'','','','','','','']) #0 = Abend
                 await send_update(result)
             currentPlace = 1
         if currentPlace == 1:
@@ -78,10 +78,10 @@ async def schedule_daily_task():
             if now.strftime("%A") in ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]:
                 await log("Morgens-1: " + str(now.date()) + " | " + now.strftime("%A"))
                 result = await _daily_update(vertretungsplan_URL=config['VERTRETUNGSPLAN_URL'])
-                result.append([1,'','','','','','','']) #True = Morgen
+                result.append([1,'','','','','','','']) #1 = Morgen
                 await send_update(result)
             currentPlace = 0
-            while current_time < datetime.time(7, 45):
+            while current_time < current_time.replace(hour=7, minute=43, second=0, microsecond=0):
                 await asyncio.sleep(120) #2 min.
                 now = berlin_now()
                 if now.strftime("%A") in ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]:
