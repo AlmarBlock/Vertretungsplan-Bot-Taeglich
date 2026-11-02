@@ -42,6 +42,8 @@ async def get_sleep_time(TimeOfDay):
         target_time = now.replace(hour=18, minute=30, second=00, microsecond=0)
     elif TimeOfDay == 1:
         target_time = now.replace(hour=6, minute=30, second=0, microsecond=0)
+        if now < now.replace(hour=7, minute=45, second=0, microsecond=0):
+            target_time = now
     if now > target_time:
         target_time += datetime.timedelta(days=1)
     wait_time = (target_time - now).total_seconds()
