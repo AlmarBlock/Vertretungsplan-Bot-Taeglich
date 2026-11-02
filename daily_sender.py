@@ -56,10 +56,10 @@ async def schedule_daily_task():
     await log("Done! ✅")
     current_time = berlin_now()
     currentPlace = None
-    if current_time.replace(hour=6, minute=30, second=0, microsecond=0) <= current_time < current_time.replace(hour=18, minute=30, second=0, microsecond=0):
+    if current_time.replace(hour=7, minute=45, second=0, microsecond=0) <= current_time < current_time.replace(hour=18, minute=30, second=0, microsecond=0):
         await log("start on Abend")
         currentPlace = 0
-    elif current_time >= current_time.replace(hour=18, minute=30, second=0, microsecond=0) or current_time < current_time.replace(hour=6, minute=30, second=0, microsecond=0):
+    elif current_time >= current_time.replace(hour=18, minute=30, second=0, microsecond=0) or current_time < current_time.replace(hour=7, minute=45, second=0, microsecond=0):
         await log("start on Morgens-1")
         currentPlace = 1
     while True:
@@ -81,7 +81,7 @@ async def schedule_daily_task():
                 result.append([1,'','','','','','','']) #1 = Morgen
                 await send_update(result)
             currentPlace = 0
-            
+
             now = berlin_now()
             while now < current_time.replace(hour=7, minute=43, second=0, microsecond=0):
                 await asyncio.sleep(120) #2 min.
