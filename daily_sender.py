@@ -85,14 +85,14 @@ async def schedule_daily_task():
             currentPlace = 0
 
             now = berlin_now()
-            while now < current_time.replace(hour=7, minute=43, second=0, microsecond=0):
+            while now <= now.replace(hour=7, minute=43, second=0, microsecond=0):
                 await asyncio.sleep(120) #2 min.
-                now = berlin_now()
                 if now.strftime("%A") in ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]:
                     await log("Morgens-2: " + str(now.date()) + " | " + now.strftime("%A"))
                     result = await _daily_update(vertretungsplan_URL=config['VERTRETUNGSPLAN_URL'])
                     result.append([2,'','','','','','','']) #2 = Morgen with update
                     await send_update(result)
+                now = berlin_now()
 
 
 if __name__ == "__main__":
